@@ -10,7 +10,11 @@ Vikings - Wolves of Midgard Discord rich presence made in python
 
 # How to use
 
-Open it with Python 3.6 and let it running while the game is open.
+Start it with Python 3.6 and let it run while the game is open.
 
 [pypresence]: <https://github.com/qwertyquerty/pypresence>
 [psutil]: <https://github.com/giampaolo/psutil>
+
+# How it works
+
+Vikings-RPC reads your save files located in your LocalLow folder and parses only the useful information. 

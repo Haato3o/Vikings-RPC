@@ -28,26 +28,26 @@ class richPresence:
     def __init__(self):
         self.dRichPresence = presence()
         self.saveFile = os.getenv('LOCALAPPDATA')+'Low\\Games Farm s_r_o_\\Vikings_ Wolves of Midgard\\saves\\'
-        self.parsed = None      # Json characters save
-        self.revision = None    # Game's revision
-        self.parsedSave = None  # Json latest save
-        self.level = None       # Char level
-        self.name = None        # Char name
-        self.god = None         # Class
-        self.location = None    # Will use it later
-        self.difficulty = None
-        self.slot = None        # Char slot user is playing on
-        self.isNewGamePlus = None
-        self.saveToRead = None
-        self.gamePID = None
-        
+        self.parsed = None              # Json characters save
+        self.revision = None            # Game's revision
+        self.parsedSave = None          # Json latest save
+        self.level = None               # Char level
+        self.name = None                # Char name
+        self.god = None                 # Class
+        self.location = None            # Will use it later
+        self.difficulty = None          # Game difficulty
+        self.slot = None                # Char slot user is playing on
+        self.isNewGamePlus = None       # Is new game+?
+        self.saveToRead = None          # Latest game save
+        self.gamePID = None             # Game PID
+        self.playerIsInStance = False   # Checks if player is in main city or in a dungeon
 
     def init(self):
         bLoop = False
         bLooper = False
         while True:
             self.detectPid()
-            if self.gamePID != None:
+            if self.gamePID == None:
                 self.dRichPresence.start()
                 self.readSave()
                 self.getInfo()
@@ -63,8 +63,15 @@ class richPresence:
                 time.sleep(10)
 
     def updatePresence(self):
+        if self.playerIsInStance:
+            stance = 'In dungeon'
+            lgImage = 'dungeon'
+        else:
+            stance = 'Castra Ignis'
+            lgImage = 'castraignis'
         self.dRichPresence.update(
-            large_image = 'logo',
+            large_image = lgImage,
+            large_text = stance,
             small_image = self.god.lower(),
             small_text = f'{self.name} - Lvl {self.level}',
             state = 'Playing solo',
@@ -101,6 +108,10 @@ class richPresence:
         self.god = self.parsedSave['playerStorage']['data'][4]['startingGod']
         self.level = self.parsedSave['playerStorage']['data'][2]['level']
         self.difficulty = self.parsedSave['playerStorage']['data'][0]['difficultyStor']
+        if len(self.parsedSave['sceneStorage']['data'][1]['challenges']) > 0:
+            self.playerIsInStance = True
+        else:
+            self.playerIsInStance = False
 
     def format_file(self):
         return f'game_r{self.revision}_s{self.slot}_c{self.saveToRead}.sav'

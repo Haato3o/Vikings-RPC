@@ -45,6 +45,7 @@ class richPresence:
         self.saveToRead = None          # Latest game save
         self.gamePID = None             # Game PID
         self.playerIsInStance = False   # Checks if player is in main city or in a dungeon
+        self.timer = None
 
     def init(self):
         bLoop = False
@@ -72,9 +73,8 @@ class richPresence:
                 time.sleep(10)
 
     def updatePresence(self):
-        timer = None
         if self.lastLoc != self.location:
-            timer = int(time.time())
+            self.timer = int(time.time())
             self.lastLoc = self.location
         if self.playerIsInStance:
             stance = self.locationFormatter(self.location)
@@ -91,7 +91,7 @@ class richPresence:
                 lgImage = 'castraignis'
         
         self.dRichPresence.update(
-            start = timer,
+            start = self.timer,
             large_image = lgImage,
             large_text = stance,
             small_image = self.god.lower(),
@@ -126,7 +126,6 @@ class richPresence:
         self.revision = self.parsed['revision']
         self.saveToRead = n['readSnapshotIndex']
         self.location = self.getLocation(n)
-        print(self.location)
     
     def locationFormatter(self, location):
         blacklist =  '0123456789'

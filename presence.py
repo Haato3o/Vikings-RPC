@@ -1,19 +1,22 @@
 import json
-from pypresence import Presence
+import pypresence
 import os
 import time
 import psutil
 
 client = '530154230913433622'
 
+supportedDungeons = ['forgotten_isle', 'utgard', 'trial_of_gods']
+
 class presence:
     def __init__(self):
-        self.rpc = Presence(client)
+        self.rpc = pypresence.Presence(client)
         self.connected = False
     
     def start(self):
         if self.connected == False:
             self.rpc.connect()
+            print('Rich presence initialized!')
             self.connected = True
 
     def stop(self):
@@ -34,7 +37,8 @@ class richPresence:
         self.level = None               # Char level
         self.name = None                # Char name
         self.god = None                 # Class
-        self.location = None            # Will use it later
+        self.location = None            # Player location
+        self.lastLoc = None             # Player last location
         self.difficulty = None          # Game difficulty
         self.slot = None                # Char slot user is playing on
         self.isNewGamePlus = None       # Is new game+?
@@ -48,6 +52,10 @@ class richPresence:
         while True:
             self.detectPid()
             if self.gamePID != None:
+                if bLooper == False:
+                    print('Initializing rich presence...')
+                    bLoop = False
+                    bLooper = True
                 self.dRichPresence.start()
                 self.readSave()
                 self.getInfo()
@@ -60,16 +68,30 @@ class richPresence:
                     print('Game PID not found. Try opening the game.')
                     self.dRichPresence.stop()
                     bLoop = True
+                    bLooper = False
                 time.sleep(10)
 
     def updatePresence(self):
+        timer = None
+        if self.lastLoc != self.location:
+            timer = int(time.time())
+            self.lastLoc = self.location
         if self.playerIsInStance:
-            stance = 'In dungeon'
-            lgImage = 'dungeon'
+            stance = self.locationFormatter(self.location)
+            if self.location in supportedDungeons:
+                lgImage = self.location
+            else:
+                lgImage = 'dungeon'
         else:
-            stance = 'Castra Ignis'
-            lgImage = 'castraignis'
+            if self.location == 'trial_of_gods':
+                stance = self.locationFormatter(self.location)
+                lgImage = self.location
+            else:
+                stance = self.locationFormatter(self.location)
+                lgImage = 'castraignis'
+        
         self.dRichPresence.update(
+            start = timer,
             large_image = lgImage,
             large_text = stance,
             small_image = self.god.lower(),
@@ -103,6 +125,25 @@ class richPresence:
         self.name = n['name']
         self.revision = self.parsed['revision']
         self.saveToRead = n['readSnapshotIndex']
+        self.location = self.getLocation(n)
+        print(self.location)
+    
+    def locationFormatter(self, location):
+        blacklist =  '0123456789'
+        for c in blacklist:
+            location = location.replace(c, '')
+        return location.replace('_', ' ').title()
+
+    def getLocation(self, save):
+        epochTimes = {}
+        epochTimesList = []
+        for lSave in save['snapshots']:
+            epochTimes[lSave['saveTime']] = lSave['sceneName']
+            epochTimesList.append(lSave['saveTime'])
+        epochTimesList.sort(reverse=True)
+        if epochTimes[epochTimesList[0]].startswith('trial_'):
+            return 'trial_of_gods'
+        return epochTimes[epochTimesList[0]]
 
     def getMoreInfo(self):
         self.god = self.parsedSave['playerStorage']['data'][4]['startingGod']

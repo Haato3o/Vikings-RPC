@@ -47,7 +47,7 @@ class richPresence:
         bLooper = False
         while True:
             self.detectPid()
-            if self.gamePID == None:
+            if self.gamePID != None:
                 self.dRichPresence.start()
                 self.readSave()
                 self.getInfo()

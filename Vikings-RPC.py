@@ -6,7 +6,15 @@ import psutil
 
 client = '530154230913433622'
 
-supportedDungeons = ['forgotten_isle', 'utgard', 'trial_of_gods']
+supportedDungeons = [
+'forgotten_isle', 
+'utgard', 
+'trial_of_gods', 
+'jotan_fortress_camp',
+'imperial_watchtowers',
+'fjord',
+'stone_circle'
+]
 
 class presence:
     def __init__(self):

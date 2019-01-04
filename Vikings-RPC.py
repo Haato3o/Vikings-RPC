@@ -15,7 +15,9 @@ supportedDungeons = [
 'fjord',
 'stone_circle',
 'simul-s_lair',
-'castra_ignis'
+'castra_ignis',
+'ragged_dunes',
+'dvergheim_blues'
 ]
 
 class presence:
@@ -57,6 +59,9 @@ class richPresence:
         self.playerIsInStance = False   # Checks if player is in main city or in a dungeon
         self.timer = None
 
+    def stop(self):
+        self.dRichPresence.stop()
+
     def init(self):
         bLoop = False
         bLooper = False
@@ -91,6 +96,7 @@ class richPresence:
             if self.location in supportedDungeons:
                 lgImage = self.location
             else:
+                print(f'Location: {self.location} not supported yet!')
                 lgImage = 'dungeon'
         else:
             if self.location == 'trial_of_gods':
@@ -146,7 +152,10 @@ class richPresence:
         for letter in range(len(result)-1):
             if result[letter] == '\'' and result[letter+1].isupper():
                 result = result.replace(result[letter+1], result[letter+1].lower())
-        return result.capitalize()
+        result = list(result)
+        if result[0].islower():
+            result[0] = result[0].upper()
+        return ''.join(result)
 
     def getLocation(self, save):
         epochTimes = {}
@@ -175,4 +184,8 @@ class richPresence:
 
 if __name__ == '__main__':
     rpc = richPresence()
-    rpc.init()
+    try:
+        rpc.init()
+    except KeyboardInterrupt:
+        rpc.stop()
+        print('Exiting...')

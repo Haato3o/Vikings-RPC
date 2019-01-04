@@ -13,7 +13,9 @@ supportedDungeons = [
 'jotan_fortress_camp',
 'imperial_watchtowers',
 'fjord',
-'stone_circle'
+'stone_circle',
+'simul-s_lair',
+'castra_ignis'
 ]
 
 class presence:
@@ -134,12 +136,17 @@ class richPresence:
         self.revision = self.parsed['revision']
         self.saveToRead = n['readSnapshotIndex']
         self.location = self.getLocation(n)
+        
     
     def locationFormatter(self, location):
         blacklist =  '0123456789'
         for c in blacklist:
             location = location.replace(c, '')
-        return location.replace('_', ' ').title()
+        result = location.replace('_', ' ').replace('-', '\'').title()
+        for letter in range(len(result)-1):
+            if result[letter] == '\'' and result[letter+1].isupper():
+                result = result.replace(result[letter+1], result[letter+1].lower())
+        return result.capitalize()
 
     def getLocation(self, save):
         epochTimes = {}
@@ -150,6 +157,8 @@ class richPresence:
         epochTimesList.sort(reverse=True)
         if epochTimes[epochTimesList[0]].startswith('trial_'):
             return 'trial_of_gods'
+        elif epochTimes[epochTimesList[0]] == 'simulslair':
+            return "simul-s_lair"
         return epochTimes[epochTimesList[0]]
 
     def getMoreInfo(self):

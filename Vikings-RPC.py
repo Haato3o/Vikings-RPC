@@ -7,9 +7,10 @@ import psutil
 client = '530154230913433622'
 
 supportedDungeons = [
-'forgotten_isle', 
-'utgard', 
-'trial_of_gods', 
+'ulfung_hub',
+'forgotten_isle',
+'utgard',
+'trial_of_gods',
 'jotan_fortress_camp',
 'imperial_watchtowers',
 'fjord',
@@ -17,7 +18,11 @@ supportedDungeons = [
 'simul-s_lair',
 'castra_ignis',
 'ragged_dunes',
-'dvergheim_blues'
+'dvergheim_blues',
+'burn_the_fleed',
+'hrafnunf_village',
+'kairlion',
+'scirwood_forest'
 ]
 
 class presence:
@@ -57,7 +62,7 @@ class richPresence:
         self.saveToRead = None          # Latest game save
         self.gamePID = None             # Game PID
         self.playerIsInStance = False   # Checks if player is in main city or in a dungeon
-        self.timer = None
+        self.timer = None               # Time elapsed
 
     def stop(self):
         self.dRichPresence.stop()
@@ -89,6 +94,8 @@ class richPresence:
 
     def updatePresence(self):
         if self.lastLoc != self.location:
+            if self.location not in supportedDungeons:
+                 print(f'Location: {self.location} not supported yet!')
             self.timer = int(time.time())
             self.lastLoc = self.location
         if self.playerIsInStance:
@@ -96,7 +103,6 @@ class richPresence:
             if self.location in supportedDungeons:
                 lgImage = self.location
             else:
-                print(f'Location: {self.location} not supported yet!')
                 lgImage = 'dungeon'
         else:
             if self.location == 'trial_of_gods':

@@ -22,7 +22,8 @@ supportedDungeons = [
 'burn_the_fleed',
 'hrafnunf_village',
 'kairlion',
-'scirwood_forest'
+'scirwood_forest',
+'plain_of_souls'
 ]
 
 class presence:
@@ -104,13 +105,15 @@ class richPresence:
                 lgImage = self.location
             else:
                 lgImage = 'dungeon'
+            stateMessage = 'In dungeon'
         else:
             if self.location == 'trial_of_gods':
                 stance = self.locationFormatter(self.location)
-                lgImage = self.location
+                stateMessage = 'In trial'
             else:
                 stance = self.locationFormatter(self.location)
-                lgImage = 'castraignis'
+                stateMessage = 'Idle'
+            lgImage = self.location
         
         self.dRichPresence.update(
             start = self.timer,
@@ -120,7 +123,7 @@ class richPresence:
             small_text = f'{self.name} - Lvl {self.level}',
             state = 'Playing solo',
             party_size = [1, 1],
-            details = f'Difficulty: {self.difficulty}'
+            details = stateMessage
         )
 
     def detectPid(self):

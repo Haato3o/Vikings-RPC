@@ -23,7 +23,8 @@ supportedDungeons = [
 'hrafnunf_village',
 'kairlion',
 'scirwood_forest',
-'plain_of_souls'
+'plain_of_souls',
+'balheim'
 ]
 
 class presence:
